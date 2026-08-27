@@ -1,0 +1,42 @@
+# Maven
+target/
+pom.xml.versionsBackup
+.mvn/wrapper/maven-wrapper.jar
+
+# NOTE: Config.get() reads System.getProperty() first, so if you ever add
+# .mvn/jvm.config for shared JVM flags, NEVER put -DAUTH_LOGIN /
+# -DAUTH_PASSWORD there - it is a committed file. Use env vars or the
+# ignored config/*.properties below.
+
+# Config per environment (Config.load resolves /config/${env}.properties)
+src/test/resources/config/*.properties
+!src/test/resources/config/*.example.properties
+src/test/java/com/booker/restful/config/*.properties
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Test Reports
+allure-results/
+allure-report/
+.allure/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

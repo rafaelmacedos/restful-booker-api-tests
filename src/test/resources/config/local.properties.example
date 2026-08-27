@@ -1,0 +1,4 @@
+# Copy to local.properties and fill in. That file is gitignored.
+BASE_URL=https://restful-booker.herokuapp.com
+AUTH_LOGIN=your-username
+AUTH_PASSWORD=your-password
