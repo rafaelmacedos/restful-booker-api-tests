@@ -2,6 +2,7 @@ package com.booker.restful.config;
 
 import static org.hamcrest.Matchers.lessThan;
 
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
@@ -26,6 +27,8 @@ public final class Specs {
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
         RestAssured.responseSpecification = TIMED;
+        // Attaches request and response of every call to the Allure report.
+        RestAssured.filters(new AllureRestAssured());
 
         if (Config.httpLog()) {
             RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
