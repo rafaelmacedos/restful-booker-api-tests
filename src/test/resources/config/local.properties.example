@@ -2,3 +2,5 @@
 BASE_URL=https://restful-booker.herokuapp.com
 AUTH_LOGIN=your-username
 AUTH_PASSWORD=your-password
+HTTP_LOG=false
+MAX_RESPONSE_TIME_MS=5000

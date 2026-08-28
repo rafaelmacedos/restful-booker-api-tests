@@ -10,7 +10,7 @@ pom.xml.versionsBackup
 
 # Config per environment (Config.load resolves /config/${env}.properties)
 src/test/resources/config/*.properties
-!src/test/resources/config/*.example.properties
+!src/test/resources/config/*.properties.example
 src/test/java/com/booker/restful/config/*.properties
 
 # Environment variables

@@ -18,8 +18,8 @@ public final class Auth {
         return given()
                 .baseUri(Config.baseUrl())
                 .contentType(ContentType.JSON)
-                .body(Map.of("username", Config.auth_login(),
-                             "password", Config.auth_password()))
+                .body(Map.of("username", Config.authLogin(),
+                             "password", Config.authPassword()))
         .when()
                 .post("/auth")
         .then()
