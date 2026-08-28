@@ -12,6 +12,16 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
+
+        <allure.version>2.29.1</allure.version>
+        <!-- The report generator is released apart from the Java libraries: allure-commandline
+             has no 2.29.1, so the two versions are pinned independently. -->
+        <allure-commandline.version>2.34.1</allure-commandline.version>
+        <allure-maven.version>2.15.2</allure-maven.version>
+        <aspectj.version>1.9.24</aspectj.version>
+        <maven-enforcer.version>3.6.3</maven-enforcer.version>
+        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+        <allure.report.directory>${project.build.directory}/allure-report</allure.report.directory>
     </properties>
 
     <dependencyManagement>
@@ -20,6 +30,13 @@
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
                 <version>5.11.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-bom</artifactId>
+                <version>${allure.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -66,16 +83,76 @@
             <version>3.27.6</version>
             <scope>test</scope>
         </dependency>
+        <!-- Allure: report model for JUnit 5 plus the REST Assured filter that attaches
+             every request and response to the report. Versions come from allure-bom. -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!--
+                The AspectJ weaver Allure depends on cannot read class files newer than Java 25,
+                and it fails at JVM startup with a stack trace that says nothing about the cause.
+                Fail here instead, with the actual instruction. Note this is the JDK running Maven,
+                not maven.compiler.release: `mvn -version` is what matters, and Homebrew's maven
+                happily runs on the newest JDK installed.
+            -->
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-jdk</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[17,26)</version>
+                                    <message>Build it with JDK 17 to 25 - Allure's AspectJ weaver breaks on 26. Point JAVA_HOME at one, e.g. export JAVA_HOME=$(/usr/libexec/java_home -v17)</message>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <includes>
-                        <include>**/tests/*.java</include>
-                    </includes>
+                    <!-- Allure's annotations are woven at runtime, so the agent has to be on the JVM. -->
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                    <systemPropertyVariables>
+                        <allure.results.directory>${allure.results.directory}</allure.results.directory>
+                    </systemPropertyVariables>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure-maven.version}</version>
+                <configuration>
+                    <reportVersion>${allure-commandline.version}</reportVersion>
+                    <resultsDirectory>${allure.results.directory}</resultsDirectory>
+                    <reportDirectory>${allure.report.directory}</reportDirectory>
                 </configuration>
             </plugin>
         </plugins>

@@ -21,6 +21,7 @@ src/test/java/com/booker/restful/config/*.properties
 # Test Reports
 allure-results/
 allure-report/
+allure-history/
 .allure/
 
 # IDE
@@ -33,6 +34,12 @@ allure-report/
 .project
 .settings/
 bin/
+
+# Agent guidance is committed on purpose: AGENTS.md, CLAUDE.md and .claude/skills/
+# are shared team convention, same as the Makefile. Do NOT ignore .claude/ wholesale.
+# Only per-developer overrides stay out - settings.local.json holds the permissions
+# each dev approved locally and is meaningless to everyone else.
+.claude/settings.local.json
 
 # OS
 .DS_Store
